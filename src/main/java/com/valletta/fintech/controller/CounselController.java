@@ -19,8 +19,9 @@ public class CounselController {
     private final CounselService counselService;
 
     @PostMapping()
-    public Long createCounsel(@RequestBody Request request) {
+    public Response createCounsel(@RequestBody Request request) {
         Response response = counselService.create(request);
-        return response.getCounselId();
+//        return response.getCounselId();
+        return response;
     }
 }
