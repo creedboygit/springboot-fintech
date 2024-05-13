@@ -31,7 +31,7 @@ public class CounselDto {
     @AllArgsConstructor
     @Builder
     @Getter
-//    @Setter
+    @Setter
     public static class Response {
 
         private Long counselId;
