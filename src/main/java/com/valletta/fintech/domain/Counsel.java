@@ -10,17 +10,19 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.annotations.Generated;
 import org.hibernate.annotations.Where;
 
 @Builder
 @Getter
+//@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @DynamicInsert
 @DynamicUpdate
+@ToString
 @Where(clause = "is_deleted=false")
 @Entity
 public class Counsel extends BaseEntity {
@@ -53,4 +55,8 @@ public class Counsel extends BaseEntity {
 
     @Column(columnDefinition = "varchar(5) DEFAULT NULL COMMENT '우편번호'")
     private String zipCode;
+
+    public void updateAppliedAt(LocalDateTime appliedAt) {
+        this.appliedAt = appliedAt;
+    }
 }
