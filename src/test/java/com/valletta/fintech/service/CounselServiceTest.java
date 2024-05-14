@@ -5,10 +5,14 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+import com.valletta.fintech.constant.ResultType;
 import com.valletta.fintech.domain.Counsel;
 import com.valletta.fintech.dto.CounselDto.Request;
 import com.valletta.fintech.dto.CounselDto.Response;
+import com.valletta.fintech.exception.BaseException;
 import com.valletta.fintech.repository.CounselRepository;
+import java.util.Optional;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -60,5 +64,31 @@ class CounselServiceTest {
         System.out.println("actual = " + actual);
 
         assertThat(actual.getName()).isSameAs(entity.getName());
+    }
+
+    @Test
+    void Should_ReturnResponseOfExistCounselEntity_When_RequestExistCounselId() {
+
+        Long findId = 1L;
+
+        Counsel entity = Counsel.builder()
+            .counselId(1L)
+            .build();
+
+        when(counselRepository.findById(findId)).thenReturn(Optional.ofNullable(entity));
+
+        Response actual = counselService.get(findId);
+
+        assertThat(actual.getCounselId()).isSameAs(findId);
+    }
+
+    @Test
+    void Should_ThrowException_When_RequestNotExistCounselId() {
+
+        Long findId = 2L;
+
+        when(counselRepository.findById(findId)).thenThrow(new BaseException(ResultType.SYSTEM_ERROR));
+
+        assertThrows(BaseException.class, () -> counselService.get(findId));
     }
 }
