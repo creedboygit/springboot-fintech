@@ -1,6 +1,8 @@
 package com.valletta.fintech.domain;
 
+import com.valletta.fintech.dto.CounselDto.Request;
 import java.time.LocalDateTime;
+import javax.naming.Name;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -58,5 +60,16 @@ public class Counsel extends BaseEntity {
 
     public void updateAppliedAt(LocalDateTime appliedAt) {
         this.appliedAt = appliedAt;
+    }
+
+//    public void updateAll(String name, String cellPhone, String email, String memo, String address, String addressDetail, String zipCode) {
+    public void updateAll(Request request) {
+        this.name = request.getName();
+        this.cellPhone = request.getCellPhone();
+        this.email = request.getEmail();
+        this.memo = request.getMemo();
+        this.address = request.getAddress();
+        this.addressDetail = request.getAddressDetail();
+        this.zipCode = request.getZipCode();
     }
 }
