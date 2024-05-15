@@ -5,6 +5,7 @@ import com.valletta.fintech.dto.CounselDto.Response;
 import com.valletta.fintech.dto.ResponseDto;
 import com.valletta.fintech.service.CounselService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -33,5 +34,11 @@ public class CounselController extends AbstractController {
     @PutMapping("/{counselId}")
     public ResponseDto<Response> update(@PathVariable("counselId") Long counselId, @RequestBody Request request) {
         return ok(counselService.update(counselId, request));
+    }
+
+    @DeleteMapping("/{counselId}")
+    public ResponseDto<Response> delete(@PathVariable("counselId") Long counselId) {
+        counselService.delete(counselId);
+        return ok();
     }
 }
