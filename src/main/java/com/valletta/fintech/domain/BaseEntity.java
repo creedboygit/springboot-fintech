@@ -31,4 +31,8 @@ public abstract class BaseEntity implements Serializable {
 
     @Column(columnDefinition = "bit default false NOT NULL COMMENT '이용가능여부'")
     private Boolean isDeleted;
+
+    public void updateDeleted() {
+        this.isDeleted = true;
+    }
 }
