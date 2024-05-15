@@ -62,6 +62,10 @@ public class Counsel extends BaseEntity {
         this.appliedAt = appliedAt;
     }
 
+    public void updateIsDeleted() {
+        this.updateDeleted();
+    }
+
 //    public void updateAll(String name, String cellPhone, String email, String memo, String address, String addressDetail, String zipCode) {
     public void updateAll(Request request) {
         this.name = request.getName();
