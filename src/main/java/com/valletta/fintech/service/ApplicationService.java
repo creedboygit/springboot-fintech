@@ -8,4 +8,6 @@ public interface ApplicationService {
     Response create(Request request);
 
     Response get(Long applicationId);
+
+    Response update(long applicationId, Request request);
 }
