@@ -1,5 +1,6 @@
 package com.valletta.fintech.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.any;
 import static org.mockito.Mockito.when;
 
@@ -8,6 +9,8 @@ import com.valletta.fintech.dto.ApplicationDto.Request;
 import com.valletta.fintech.dto.ApplicationDto.Response;
 import com.valletta.fintech.repository.ApplicationRepository;
 import java.math.BigDecimal;
+import java.util.Optional;
+import javax.swing.text.html.parser.Entity;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -51,7 +54,23 @@ public class ApplicationServiceTest {
 
         Response actual = applicationService.create(request);
 
-        Assertions.assertThat(actual.getHopeAmount()).isSameAs(entity.getHopeAmount());
-        Assertions.assertThat(actual.getName()).isSameAs(entity.getName());
+        assertThat(actual.getHopeAmount()).isSameAs(entity.getHopeAmount());
+        assertThat(actual.getName()).isSameAs(entity.getName());
+    }
+
+    @Test
+    void Should_ReturnResponseOfExistApplicationEntity_When_RequestExistApplicationId() {
+
+        Long findId = 1L;
+
+        Application entity = Application.builder()
+            .applicationId(1L)
+            .build();
+
+        when(applicationRepository.findById(findId)).thenReturn(Optional.ofNullable(entity));
+
+        Response actual = applicationService.get(findId);
+
+        assertThat(actual.getApplicationId()).isSameAs(findId);
     }
 }
