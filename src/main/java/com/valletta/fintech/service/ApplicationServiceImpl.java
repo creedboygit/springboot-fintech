@@ -1,8 +1,10 @@
 package com.valletta.fintech.service;
 
+import com.valletta.fintech.constant.ResultType;
 import com.valletta.fintech.domain.Application;
 import com.valletta.fintech.dto.ApplicationDto.Request;
 import com.valletta.fintech.dto.ApplicationDto.Response;
+import com.valletta.fintech.exception.BaseException;
 import com.valletta.fintech.repository.ApplicationRepository;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
@@ -25,5 +27,11 @@ public class ApplicationServiceImpl implements ApplicationService {
         Application applied = applicationRepository.save(application);
 
         return modelMapper.map(applied, Response.class);
+    }
+
+    @Override
+    public Response get(Long applicationId) {
+        Application application = applicationRepository.findById(applicationId).orElseThrow(() -> new BaseException(ResultType.SYSTEM_ERROR));
+        return modelMapper.map(application, Response.class);
     }
 }

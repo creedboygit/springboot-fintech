@@ -6,4 +6,6 @@ import com.valletta.fintech.dto.ApplicationDto.Response;
 public interface ApplicationService {
 
     Response create(Request request);
+
+    Response get(Long applicationId);
 }
