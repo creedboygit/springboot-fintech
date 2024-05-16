@@ -2,6 +2,7 @@ package com.valletta.fintech.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import com.valletta.fintech.domain.Application;
@@ -72,5 +73,28 @@ public class ApplicationServiceTest {
         Response actual = applicationService.get(findId);
 
         assertThat(actual.getApplicationId()).isSameAs(findId);
+    }
+
+    @Test
+    void Should_ReturnUpdatedResponseOfExistApplicationEntity_When_RequestUpdateExistApplicationInfo() {
+
+        Long findId = 1L;
+
+        Application entity = Application.builder()
+            .applicationId(1L)
+            .hopeAmount(BigDecimal.valueOf(50000000))
+            .build();
+
+        Request request = Request.builder()
+            .hopeAmount(BigDecimal.valueOf(5000000))
+            .build();
+
+        when(applicationRepository.findById(findId)).thenReturn(Optional.ofNullable(entity));
+        when(applicationRepository.save(ArgumentMatchers.any(Application.class))).thenReturn(entity);
+
+        Response actual = applicationService.update(findId, request);
+
+        assertThat(actual.getApplicationId()).isSameAs(findId);
+        assertThat(actual.getHopeAmount()).isSameAs(request.getHopeAmount());
     }
 }
