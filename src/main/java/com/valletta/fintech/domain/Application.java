@@ -69,4 +69,8 @@ public class Application extends BaseEntity {
         this.email = request.getEmail();
         this.hopeAmount = request.getHopeAmount();
     }
+
+    public void deleteApplication(Long applicationId) {
+        this.updateDeleted();
+    }
 }
