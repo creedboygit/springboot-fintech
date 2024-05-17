@@ -1,6 +1,7 @@
 package com.valletta.fintech.service;
 
 import com.valletta.fintech.constant.ResultType;
+import com.valletta.fintech.domain.AcceptTerms;
 import com.valletta.fintech.domain.Application;
 import com.valletta.fintech.dto.ApplicationDto.Request;
 import com.valletta.fintech.dto.ApplicationDto.Response;
@@ -53,5 +54,14 @@ public class ApplicationServiceImpl implements ApplicationService {
 
         applicationRepository.save(entity);
 //        applicationRepository.delete(entity);
+    }
+
+    @Override
+    public Boolean acceptTerms(Long applicationId, AcceptTerms request) {
+        applicationRepository.findById(applicationId).orElseThrow(() -> {
+            throw new BaseException(ResultType.SYSTEM_ERROR);
+        });
+
+        return null;
     }
 }
