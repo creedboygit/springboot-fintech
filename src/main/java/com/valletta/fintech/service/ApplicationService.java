@@ -9,5 +9,7 @@ public interface ApplicationService {
 
     Response get(Long applicationId);
 
-    Response update(long applicationId, Request request);
+    Response update(Long applicationId, Request request);
+
+    void delete(Long applicationId);
 }
