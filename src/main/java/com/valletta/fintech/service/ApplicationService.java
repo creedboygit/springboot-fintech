@@ -1,5 +1,6 @@
 package com.valletta.fintech.service;
 
+import com.valletta.fintech.domain.AcceptTerms;
 import com.valletta.fintech.dto.ApplicationDto.Request;
 import com.valletta.fintech.dto.ApplicationDto.Response;
 
@@ -12,4 +13,6 @@ public interface ApplicationService {
     Response update(Long applicationId, Request request);
 
     void delete(Long applicationId);
+
+    Boolean acceptTerms(Long applicationId, AcceptTerms request);
 }
