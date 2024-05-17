@@ -10,7 +10,6 @@ import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
 @RequiredArgsConstructor
 @Service
@@ -37,12 +36,22 @@ public class ApplicationServiceImpl implements ApplicationService {
     }
 
     @Override
-    public Response update(long applicationId, Request request) {
+    public Response update(Long applicationId, Request request) {
         Application entity = applicationRepository.findById(applicationId).orElseThrow(() -> new BaseException(ResultType.SYSTEM_ERROR));
         entity.updateAll(request);
 
         applicationRepository.save(entity);
 
         return modelMapper.map(entity, Response.class);
+    }
+
+    @Override
+    public void delete(Long applicationId) {
+        Application entity = applicationRepository.findById(applicationId).orElseThrow(() -> new BaseException(ResultType.SYSTEM_ERROR));
+
+        entity.updateDeleted();
+
+        applicationRepository.save(entity);
+//        applicationRepository.delete(entity);
     }
 }
