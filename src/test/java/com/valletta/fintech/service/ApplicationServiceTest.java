@@ -1,7 +1,6 @@
 package com.valletta.fintech.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.any;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -11,8 +10,6 @@ import com.valletta.fintech.dto.ApplicationDto.Response;
 import com.valletta.fintech.repository.ApplicationRepository;
 import java.math.BigDecimal;
 import java.util.Optional;
-import javax.swing.text.html.parser.Entity;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatchers;
@@ -51,7 +48,7 @@ public class ApplicationServiceTest {
             .hopeAmount(BigDecimal.valueOf(50000000))
             .build();
 
-        when(applicationRepository.save(ArgumentMatchers.any(Application.class))).thenReturn(entity);
+        when(applicationRepository.save(any(Application.class))).thenReturn(entity);
 
         Response actual = applicationService.create(request);
 
@@ -90,11 +87,29 @@ public class ApplicationServiceTest {
             .build();
 
         when(applicationRepository.findById(findId)).thenReturn(Optional.ofNullable(entity));
-        when(applicationRepository.save(ArgumentMatchers.any(Application.class))).thenReturn(entity);
+        when(applicationRepository.save(any(Application.class))).thenReturn(entity);
 
         Response actual = applicationService.update(findId, request);
 
         assertThat(actual.getApplicationId()).isSameAs(findId);
         assertThat(actual.getHopeAmount()).isSameAs(request.getHopeAmount());
+    }
+
+    @Test
+    void Should_DeleteApplicationEntity_When_RequestDeleteExistApplicationInfo() {
+
+        Long targetId = 1L;
+
+        Application entity = Application.builder()
+            .applicationId(1L)
+            .build();
+
+        when(applicationRepository.findById(targetId)).thenReturn(Optional.ofNullable(entity));
+        when(applicationRepository.save(any(Application.class))).thenReturn(entity);
+
+        applicationService.delete(targetId);
+
+        assert entity != null;
+        assertThat(entity.getIsDeleted()).isSameAs(true);
     }
 }
