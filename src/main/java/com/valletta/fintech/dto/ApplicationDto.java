@@ -3,12 +3,12 @@ package com.valletta.fintech.dto;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.data.domain.AfterDomainEventPublication;
 
 public class ApplicationDto implements Serializable {
 
@@ -40,5 +40,15 @@ public class ApplicationDto implements Serializable {
         private LocalDateTime appliedAt;
         private LocalDateTime createdAt;
         private LocalDateTime updatedAt;
+    }
+
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    @Setter
+    @Getter
+    public static class AcceptTermsRequest {
+
+        private List<Long> acceptTermsIds;
     }
 }
