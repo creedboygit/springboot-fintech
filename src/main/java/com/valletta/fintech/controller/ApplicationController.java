@@ -3,12 +3,18 @@ package com.valletta.fintech.controller;
 import com.valletta.fintech.dto.ApplicationDto.AcceptTermsRequest;
 import com.valletta.fintech.dto.ApplicationDto.Request;
 import com.valletta.fintech.dto.ApplicationDto.Response;
+import com.valletta.fintech.dto.FileDto;
 import com.valletta.fintech.dto.ResponseDto;
 import com.valletta.fintech.service.ApplicationService;
 import com.valletta.fintech.service.FileStorageService;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
 import org.springframework.data.repository.query.Param;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 
 @RestController
 @RequiredArgsConstructor
@@ -65,5 +72,26 @@ public class ApplicationController extends AbstractController {
     public ResponseDto<Void> upload(MultipartFile file) throws IOException {
         fileStorageService.save(file);
         return ok();
+    }
+
+    @GetMapping("/files")
+    public ResponseEntity<Resource> download(@RequestParam(value = "fileName") String fileName) throws MalformedURLException {
+
+        Resource file = fileStorageService.load(fileName);
+        return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFilename() + "\"").body(file);
+    }
+
+    @GetMapping("/files/infos")
+    public ResponseDto<List<FileDto>> getFileInfos() throws IOException {
+
+        List<FileDto> fileInfos = fileStorageService.loadAll().map(path -> {
+            String fileName = path.getFileName().toString();
+            return FileDto.builder()
+                .name(fileName)
+                .url(MvcUriComponentsBuilder.fromMethodName(ApplicationController.class, "download", fileName).build().toString())
+                .build();
+        }).toList();
+
+        return ok(fileInfos);
     }
 }
