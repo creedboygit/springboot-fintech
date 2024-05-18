@@ -1,5 +1,6 @@
 package com.valletta.fintech.controller;
 
+import com.valletta.fintech.dto.ApplicationDto.AcceptTermsRequest;
 import com.valletta.fintech.dto.ApplicationDto.Request;
 import com.valletta.fintech.dto.ApplicationDto.Response;
 import com.valletta.fintech.dto.ResponseDto;
@@ -44,5 +45,11 @@ public class ApplicationController extends AbstractController {
 
         applicationService.delete(applicationId);
         return ok();
+    }
+
+    @PostMapping("{applicationId}/terms")
+    public ResponseDto<Boolean> acceptTerms(@PathVariable("applicationId") Long applicationId, @RequestBody AcceptTermsRequest request) {
+
+        return ok(applicationService.acceptTerms(applicationId, request));
     }
 }
