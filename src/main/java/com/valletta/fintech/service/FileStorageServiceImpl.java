@@ -3,13 +3,16 @@ package com.valletta.fintech.service;
 import com.valletta.fintech.constant.ResultType;
 import com.valletta.fintech.exception.BaseException;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.Objects;
+import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -35,6 +38,36 @@ public class FileStorageServiceImpl implements FileStorageService {
 
 //            Files.copy(file.getInputStream(), Paths.get(uploadPath).resolve(
 //                Objects.requireNonNull(file.getOriginalFilename())), StandardCopyOption.REPLACE_EXISTING);
+        } catch (Exception e) {
+            throw new BaseException(ResultType.SYSTEM_ERROR);
+        }
+    }
+
+    @Override
+    public Resource load(String fileName) throws MalformedURLException {
+
+        try {
+            Path file = Paths.get(uploadPath).resolve(fileName);
+
+            UrlResource resource = new UrlResource(file.toUri());
+
+            if (resource.isReadable() || resource.exists()) {
+                return resource;
+            } else {
+                throw new BaseException(ResultType.NOT_EXIST);
+            }
+        } catch (Exception e) {
+            throw new BaseException(ResultType.SYSTEM_ERROR);
+        }
+    }
+
+    @Override
+    public Stream<Path> loadAll() throws IOException {
+
+        try (Stream<Path> paths = Files.walk(Paths.get(uploadPath), 1)) {
+            return paths.filter(path -> !path.equals(Paths.get(uploadPath)))
+                .toList()
+                .stream();
         } catch (Exception e) {
             throw new BaseException(ResultType.SYSTEM_ERROR);
         }
