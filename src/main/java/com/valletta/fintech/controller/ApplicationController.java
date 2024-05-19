@@ -1,23 +1,17 @@
 package com.valletta.fintech.controller;
 
-import com.valletta.fintech.constant.ResultType;
 import com.valletta.fintech.dto.ApplicationDto.AcceptTermsRequest;
 import com.valletta.fintech.dto.ApplicationDto.Request;
 import com.valletta.fintech.dto.ApplicationDto.Response;
 import com.valletta.fintech.dto.FileDto;
 import com.valletta.fintech.dto.ResponseDto;
-import com.valletta.fintech.exception.BaseException;
 import com.valletta.fintech.service.ApplicationService;
 import com.valletta.fintech.service.FileStorageService;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
-import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -30,7 +24,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 
 @RestController
 @RequiredArgsConstructor
@@ -67,28 +60,28 @@ public class ApplicationController extends AbstractController {
         return ok(applicationService.acceptTerms(applicationId, request));
     }
 
-    @PostMapping("/files")
+    @PostMapping("/{applicationId}/files")
 //    public ResponseDto<Void> upload(@RequestParam("file") MultipartFile file) throws IOException {
-    public ResponseDto<Void> upload(MultipartFile file) throws IOException {
-        fileStorageService.save(file);
+    public ResponseDto<Void> upload(@PathVariable("applicationId") Long applicationId, MultipartFile file) throws IOException {
+        fileStorageService.save(applicationId, file);
         return ok();
     }
 
-    @GetMapping("/files")
-    public ResponseEntity<Resource> download(@RequestParam(value = "fileName") String fileName) throws MalformedURLException {
-        Resource file = fileStorageService.load(fileName);
+    @GetMapping("/{applicationId}/files")
+    public ResponseEntity<Resource> download(@PathVariable("applicationId") Long applicationId, @RequestParam(value = "filename") String filename) throws MalformedURLException {
+        Resource file = fileStorageService.load(applicationId, filename);
         return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFilename() + "\"").body(file);
     }
 
-    @GetMapping("/files/infos")
-    public ResponseDto<List<FileDto>> getFileInfos() throws IOException {
-        List<FileDto> fileInfos = fileStorageService.loadAll();
+    @GetMapping("/{applicationId}/files/infos")
+    public ResponseDto<List<FileDto>> getFileInfos(@PathVariable("applicationId") Long applicationId) throws IOException {
+        List<FileDto> fileInfos = fileStorageService.loadAll(applicationId);
         return ok(fileInfos);
     }
 
-    @DeleteMapping("/files")
-    public ResponseDto<Void> deleteAll() {
-        fileStorageService.deleteAll();
+    @DeleteMapping("/{applicationId}/files")
+    public ResponseDto<Void> deleteAll(@PathVariable("applicationId") Long applicationId) {
+        fileStorageService.deleteAll(applicationId);
         return ok();
     }
 }
