@@ -1,12 +1,15 @@
 package com.valletta.fintech.service;
 
 import com.valletta.fintech.constant.ResultType;
+import com.valletta.fintech.controller.ApplicationController;
+import com.valletta.fintech.dto.FileDto;
 import com.valletta.fintech.exception.BaseException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +18,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 
 @RequiredArgsConstructor
 @Service
@@ -61,8 +65,33 @@ public class FileStorageServiceImpl implements FileStorageService {
         }
     }
 
-    @Override
-    public Stream<Path> loadAll() throws IOException {
+    public List<FileDto> loadAll() throws IOException {
+
+        List<FileDto> fileInfos = loadPaths().map(path -> {
+            String fileName = path.getFileName().toString();
+
+            // 파일 이름 유효성 검증
+            if (fileName.contains("..")) {
+                throw new BaseException(ResultType.INVALID_REQUEST, "invalid file path");
+            }
+
+            // 파일 경로 유효성 검증
+            Path rootPath = Paths.get(uploadPath).normalize();
+            Path resolvedPath = rootPath.resolve(fileName).normalize();
+            if (!resolvedPath.startsWith(rootPath)) {
+                throw new BaseException(ResultType.INVALID_REQUEST, "invalid file path");
+            }
+
+            return FileDto.builder()
+                .name(fileName)
+                .url(MvcUriComponentsBuilder.fromMethodName(ApplicationController.class, "download", fileName).build().toString())
+                .build();
+        }).toList();
+
+        return fileInfos;
+    }
+
+    private Stream<Path> loadPaths() throws IOException {
 
         try (Stream<Path> paths = Files.walk(Paths.get(uploadPath), 1)) {
             return paths.filter(path -> !path.equals(Paths.get(uploadPath)))
