@@ -4,6 +4,7 @@ import com.valletta.fintech.constant.ResultType;
 import com.valletta.fintech.controller.ApplicationController;
 import com.valletta.fintech.dto.FileDto;
 import com.valletta.fintech.exception.BaseException;
+import com.valletta.fintech.repository.ApplicationRepository;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
@@ -25,18 +26,31 @@ import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBui
 @Service
 public class FileStorageServiceImpl implements FileStorageService {
 
+    private final ApplicationRepository applicationRepository;
     @Value("${spring.servlet.multipart.location}")
     private String uploadPath;
 
     @Override
-    public void save(MultipartFile file) {
+    public void save(Long applicationId, MultipartFile file) {
+
+        if (!isPresentApplication(applicationId)) {
+            throw new BaseException(ResultType.SYSTEM_ERROR);
+        }
 
         try {
+            String applicationPath = uploadPath.concat("/" + applicationId);
+
+            Path directoryPath = Path.of(applicationPath);
+
+            if (!Files.exists(directoryPath)) {
+                Files.createDirectory(directoryPath);
+            }
+
             // 파일 이름 검증
             String originalFilename = Objects.requireNonNull(file.getOriginalFilename(), "File name must not be null");
 
             // 업로드 경로 설정
-            Path targetLocation = Paths.get(uploadPath).resolve(originalFilename);
+            Path targetLocation = directoryPath.resolve(originalFilename).normalize();
 
             // 파일 저장
             file.transferTo(targetLocation.toFile());
@@ -49,10 +63,22 @@ public class FileStorageServiceImpl implements FileStorageService {
     }
 
     @Override
-    public Resource load(String fileName) throws MalformedURLException {
+    public Resource load(Long applicationId, String filename) throws MalformedURLException {
+
+        if (!isPresentApplication(applicationId)) {
+            throw new BaseException(ResultType.SYSTEM_ERROR);
+        }
 
         try {
-            Path file = Paths.get(uploadPath).resolve(fileName);
+            String applicationPath = uploadPath.concat("/" + applicationId);
+
+            Path path = Paths.get(applicationPath);
+
+            Path file = path.resolve(filename).normalize();
+
+            if (!file.startsWith(path.normalize())) {
+                throw new BaseException(ResultType.INVALID_REQUEST, "invalid file path");
+            }
 
             UrlResource resource = new UrlResource(file.toUri());
 
@@ -66,9 +92,13 @@ public class FileStorageServiceImpl implements FileStorageService {
         }
     }
 
-    public List<FileDto> loadAll() throws IOException {
+    public List<FileDto> loadAll(Long applicationId) throws IOException {
 
-        List<FileDto> fileInfos = loadPaths().map(path -> {
+        if (!isPresentApplication(applicationId)) {
+            throw new BaseException(ResultType.SYSTEM_ERROR);
+        }
+
+        List<FileDto> fileInfos = loadPaths(applicationId).map(path -> {
             String fileName = path.getFileName().toString();
 
             // 파일 이름 유효성 검증
@@ -85,7 +115,7 @@ public class FileStorageServiceImpl implements FileStorageService {
 
             return FileDto.builder()
                 .name(fileName)
-                .url(MvcUriComponentsBuilder.fromMethodName(ApplicationController.class, "download", fileName).build().toString())
+                .url(MvcUriComponentsBuilder.fromMethodName(ApplicationController.class, "download", applicationId, fileName).build().toString())
                 .build();
         }).toList();
 
@@ -93,18 +123,34 @@ public class FileStorageServiceImpl implements FileStorageService {
     }
 
     @Override
-    public void deleteAll() {
-        FileSystemUtils.deleteRecursively(Paths.get(uploadPath).toFile());
+    public void deleteAll(Long applicationId) {
+
+        if (!isPresentApplication(applicationId)) {
+            throw new BaseException(ResultType.SYSTEM_ERROR);
+        }
+
+        String applicationPath = uploadPath.concat("/" + applicationId);
+
+//        FileSystemUtils.deleteRecursively(Paths.get(uploadPath).toFile());
+        FileSystemUtils.deleteRecursively(Paths.get(applicationPath).toFile());
     }
 
-    private Stream<Path> loadPaths() throws IOException {
+    private Stream<Path> loadPaths(Long applicationId) throws IOException {
 
-        try (Stream<Path> paths = Files.walk(Paths.get(uploadPath), 1)) {
-            return paths.filter(path -> !path.equals(Paths.get(uploadPath)))
+        String applicationPath = uploadPath.concat("/" + applicationId);
+
+//        try (Stream<Path> paths = Files.walk(Paths.get(uploadPath), 1)) {
+        try (Stream<Path> paths = Files.walk(Paths.get(applicationPath), 1)) {
+//            return paths.filter(path -> !path.equals(Paths.get(uploadPath)))
+            return paths.filter(path -> !path.equals(Paths.get(applicationPath)))
                 .toList()
                 .stream();
         } catch (Exception e) {
             throw new BaseException(ResultType.SYSTEM_ERROR);
         }
+    }
+
+    private boolean isPresentApplication(Long applicationId) {
+        return applicationRepository.findById(applicationId).isPresent();
     }
 }
