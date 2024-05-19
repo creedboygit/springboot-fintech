@@ -85,4 +85,10 @@ public class ApplicationController extends AbstractController {
         List<FileDto> fileInfos = fileStorageService.loadAll();
         return ok(fileInfos);
     }
+
+    @DeleteMapping("/files")
+    public ResponseDto<Void> deleteAll() {
+        fileStorageService.deleteAll();
+        return ok();
+    }
 }
