@@ -18,4 +18,6 @@ public interface FileStorageService {
 //    Stream<Path> loadAll() throws IOException;
 
     List<FileDto> loadAll() throws IOException;
+
+    void deleteAll();
 }
