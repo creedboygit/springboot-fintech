@@ -1,5 +1,6 @@
 package com.valletta.fintech.dto;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -8,9 +9,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-public class CounselDto {
+public class CounselDto implements Serializable {
 
-    @ToString
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
@@ -26,7 +26,6 @@ public class CounselDto {
         private String zipCode;
     }
 
-    @ToString
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
