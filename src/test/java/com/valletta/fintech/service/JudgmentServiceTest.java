@@ -96,4 +96,44 @@ public class JudgmentServiceTest {
 
         assertThat(actual.getJudgmentId()).isSameAs(1L);
     }
+
+    @Test
+    void Should_ReturnUpdatedResponseOfExistJudgmentEntity_When_RequestUpdateExistJudgmentInfo() {
+
+        Request request = Request.builder()
+            .name("대출심사명1")
+            .approvalAmount(BigDecimal.valueOf(4000000))
+            .build();
+
+        Judgment judgment = Judgment.builder()
+            .judgmentId(1L)
+            .name("멤버리")
+            .approvalInterestRate(BigDecimal.valueOf(20000000))
+            .build();
+
+        when(judgmentRepository.findById(1L)).thenReturn(Optional.ofNullable(judgment));
+        when(judgmentRepository.save(any(Judgment.class))).thenReturn(judgment);
+
+        Response actual = judgmentService.update(1L, request);
+
+        assertThat(actual.getJudgmentId()).isSameAs(1L);
+        assertThat(actual.getName()).isSameAs(request.getName());
+        assertThat(actual.getApprovalAmount()).isSameAs(request.getApprovalAmount());
+    }
+
+    @Test
+    void Should_DeletedJudgmentEntity_When_RequestdeleteExistJudgmentInfo() {
+
+        Judgment judgment = Judgment.builder()
+            .judgmentId(1L)
+            .build();
+
+        when(judgmentRepository.findById(1L)).thenReturn(Optional.ofNullable(judgment));
+        when(judgmentRepository.save(any(Judgment.class))).thenReturn(judgment);
+
+        judgmentService.delete(1L);
+
+        assertThat(judgment).isNotNull();
+        assertThat(judgment.getIsDeleted()).isTrue();
+    }
 }
