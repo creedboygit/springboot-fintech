@@ -1,5 +1,6 @@
 package com.valletta.fintech.controller;
 
+import com.valletta.fintech.dto.ApplicationDto.GrantAmount;
 import com.valletta.fintech.dto.JudgmentDto.Request;
 import com.valletta.fintech.dto.JudgmentDto.Response;
 import com.valletta.fintech.dto.ResponseDto;
@@ -7,6 +8,7 @@ import com.valletta.fintech.service.JudgmentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -50,5 +52,11 @@ public class JudgmentController extends AbstractController {
 
         judgmentService.delete(judgmentId);
         return ok();
+    }
+
+    @PatchMapping("/{judgmentId}/grants")
+    public ResponseDto<GrantAmount> grant(@PathVariable("judgmentId") Long judgmentId) {
+
+        return ok(judgmentService.grant(judgmentId));
     }
 }
