@@ -1,5 +1,6 @@
 package com.valletta.fintech.domain;
 
+import com.valletta.fintech.dto.JudgmentDto.Request;
 import java.math.BigDecimal;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -42,4 +43,10 @@ public class Judgment extends BaseEntity {
 
   @Column(columnDefinition = "decimal(5,4) DEFAULT NULL COMMENT '승인 금리'")
   private BigDecimal approvalInterestRate;
+
+  public void update(Request request) {
+
+    this.name = request.getName();
+    this.approvalAmount = request.getApprovalAmount();
+  }
 }
