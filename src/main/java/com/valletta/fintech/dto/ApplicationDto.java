@@ -37,6 +37,7 @@ public class ApplicationDto implements Serializable {
         private String cellPhone;
         private String email;
         private BigDecimal hopeAmount;
+        private BigDecimal approvalAmount;
         private LocalDateTime appliedAt;
         private LocalDateTime createdAt;
         private LocalDateTime updatedAt;
