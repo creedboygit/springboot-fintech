@@ -70,6 +70,10 @@ public class Application extends BaseEntity {
         this.hopeAmount = request.getHopeAmount();
     }
 
+    public void updateApprovalAmount(BigDecimal approvalAmount) {
+        this.approvalAmount = approvalAmount;
+    }
+
     public void deleteApplication(Long applicationId) {
         this.updateDeleted();
     }
