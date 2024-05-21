@@ -37,6 +37,26 @@ public class JudgmentServiceImpl implements JudgmentService {
         return modelMapper.map(saved, Response.class);
     }
 
+    @Override
+    public Response get(Long judgmentId) {
+
+        Judgment judgment = judgmentRepository.findById(judgmentId).orElseThrow(() -> new BaseException(ResultType.SYSTEM_ERROR));
+        return modelMapper.map(judgment, Response.class);
+    }
+
+    @Override
+    public Response getJudgmentByApplication(Long applicationId) {
+
+        // 신청 정보가 있는지 검증
+        if (!isPresentApplication(applicationId)) {
+            throw new BaseException(ResultType.SYSTEM_ERROR);
+        }
+
+        Judgment judgment = judgmentRepository.findByApplicationId(applicationId).orElseThrow(() -> new BaseException(ResultType.SYSTEM_ERROR));
+
+        return modelMapper.map(judgment, Response.class);
+    }
+
     private boolean isPresentApplication(Long applicationId) {
         return applicationRepository.findById(applicationId).isPresent();
     }
