@@ -1,16 +1,24 @@
 package com.valletta.fintech.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
+import com.valletta.fintech.domain.Application;
+import com.valletta.fintech.domain.Judgment;
 import com.valletta.fintech.dto.JudgmentDto.Request;
 import com.valletta.fintech.dto.JudgmentDto.Response;
 import com.valletta.fintech.repository.ApplicationRepository;
 import com.valletta.fintech.repository.JudgmentRepository;
 import java.math.BigDecimal;
+import java.util.Optional;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
@@ -39,9 +47,20 @@ public class JudgmentServiceTest {
             .approvalAmount(BigDecimal.valueOf(3000000))
             .build();
 
+        Judgment entity = Judgment.builder()
+            .judgmentId(1L)
+            .name("심사명")
+            .approvalAmount(BigDecimal.valueOf(30000000))
+            .build();
 
+//        when(applicationRepository.findById(1L)).thenReturn(Optional.ofNullable(Application.builder().applicationId(1L).build()));
+        when(applicationRepository.findById(1L)).thenReturn(Optional.ofNullable(Application.builder().build()));
+        when(judgmentRepository.save(any(Judgment.class))).thenReturn(entity);
 
         Response actual = judgmentService.create(request);
-    }
 
+        assertThat(actual.getJudgmentId()).isSameAs(entity.getJudgmentId());
+        assertThat(actual.getName()).isSameAs(entity.getName());
+        assertThat(actual.getApprovalAmount()).isSameAs(entity.getApprovalAmount());
+    }
 }
