@@ -5,6 +5,8 @@ import com.valletta.fintech.dto.JudgmentDto.Response;
 import com.valletta.fintech.dto.ResponseDto;
 import com.valletta.fintech.service.JudgmentService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,5 +23,17 @@ public class JudgmentController extends AbstractController {
     public ResponseDto<Response> create(@RequestBody Request request) {
 
         return ok(judgmentService.create(request));
+    }
+
+    @GetMapping("/{judgmentId}")
+    public ResponseDto<Response> get(@PathVariable("judgmentId") Long judgmentId) {
+
+        return ok(judgmentService.get(judgmentId));
+    }
+
+    @GetMapping("/applications/{applicationId}")
+    public ResponseDto<Response> getJudgmentByApplication(@PathVariable("applicationId") Long applicationId) {
+
+        return ok(judgmentService.getJudgmentByApplication(applicationId));
     }
 }
