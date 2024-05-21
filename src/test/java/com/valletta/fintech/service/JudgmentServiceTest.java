@@ -7,6 +7,7 @@ import static org.mockito.Mockito.when;
 
 import com.valletta.fintech.domain.Application;
 import com.valletta.fintech.domain.Judgment;
+import com.valletta.fintech.dto.ApplicationDto.GrantAmount;
 import com.valletta.fintech.dto.JudgmentDto.Request;
 import com.valletta.fintech.dto.JudgmentDto.Response;
 import com.valletta.fintech.repository.ApplicationRepository;
@@ -135,5 +136,33 @@ public class JudgmentServiceTest {
 
         assertThat(judgment).isNotNull();
         assertThat(judgment.getIsDeleted()).isTrue();
+    }
+
+    @Test
+    void Should_ReturnUpdateResponseOfExistApplicationEntity_When_RequestGrantApplovalAmountOfJudgmentInfo() {
+
+        Long findId = 1L;
+
+        Judgment judgment = Judgment.builder()
+//            .applicationId(1L)
+            .name("멤버")
+            .applicationId(findId)
+            .approvalAmount(BigDecimal.valueOf(20000000))
+            .build();
+
+        Application application = Application.builder()
+            .applicationId(findId)
+            .approvalAmount(BigDecimal.valueOf(20000000))
+            .build();
+
+        when(judgmentRepository.findById(findId)).thenReturn(Optional.ofNullable(judgment));
+        when(applicationRepository.findById(findId)).thenReturn(Optional.ofNullable(application));
+        when(applicationRepository.save(any(Application.class))).thenReturn(application);
+
+        GrantAmount actual = judgmentService.grant(findId);
+
+        assertThat(judgment).isNotNull();
+        assertThat(actual.getApplicationId()).isSameAs(findId);
+        assertThat(actual.getApprovalAmount()).isSameAs(judgment.getApprovalAmount());
     }
 }
