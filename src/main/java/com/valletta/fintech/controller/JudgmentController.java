@@ -5,9 +5,11 @@ import com.valletta.fintech.dto.JudgmentDto.Response;
 import com.valletta.fintech.dto.ResponseDto;
 import com.valletta.fintech.service.JudgmentService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -35,5 +37,18 @@ public class JudgmentController extends AbstractController {
     public ResponseDto<Response> getJudgmentByApplication(@PathVariable("applicationId") Long applicationId) {
 
         return ok(judgmentService.getJudgmentByApplication(applicationId));
+    }
+
+    @PutMapping("/{judgmentId}")
+    public ResponseDto<Response> update(@PathVariable("judgmentId") Long judgmentId, @RequestBody Request request) {
+
+        return ok(judgmentService.update(judgmentId, request));
+    }
+
+    @DeleteMapping("/{judgmentId}")
+    public ResponseDto<Void> delete(@PathVariable("judgmentId") Long judgmentId) {
+
+        judgmentService.delete(judgmentId);
+        return ok();
     }
 }
