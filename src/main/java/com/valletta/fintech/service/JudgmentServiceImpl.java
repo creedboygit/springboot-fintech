@@ -1,12 +1,16 @@
 package com.valletta.fintech.service;
 
 import com.valletta.fintech.constant.ResultType;
+import com.valletta.fintech.domain.Application;
 import com.valletta.fintech.domain.Judgment;
+import com.valletta.fintech.dto.ApplicationDto.AcceptTermsRequest;
+import com.valletta.fintech.dto.ApplicationDto.GrantAmount;
 import com.valletta.fintech.dto.JudgmentDto.Request;
 import com.valletta.fintech.dto.JudgmentDto.Response;
 import com.valletta.fintech.exception.BaseException;
 import com.valletta.fintech.repository.ApplicationRepository;
 import com.valletta.fintech.repository.JudgmentRepository;
+import java.math.BigDecimal;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -72,6 +76,23 @@ public class JudgmentServiceImpl implements JudgmentService {
         Judgment judgment = judgmentRepository.findById(judgmentId).orElseThrow(() -> new BaseException(ResultType.SYSTEM_ERROR));
         judgment.updateDeleted();
         judgmentRepository.save(judgment);
+    }
+
+    @Override
+    public GrantAmount grant(Long judgmentId) {
+
+        Judgment judgment = judgmentRepository.findById(judgmentId).orElseThrow(() -> new BaseException(ResultType.SYSTEM_ERROR));
+
+        Long applicationId = judgment.getApplicationId();
+        Application application = applicationRepository.findById(applicationId).orElseThrow(() -> new BaseException(ResultType.SYSTEM_ERROR));
+
+        BigDecimal approvalAmount = judgment.getApprovalAmount();
+
+        application.updateApprovalAmount(approvalAmount);
+
+        applicationRepository.save(application);
+
+        return modelMapper.map(application, GrantAmount.class);
     }
 
     private boolean isPresentApplication(Long applicationId) {
