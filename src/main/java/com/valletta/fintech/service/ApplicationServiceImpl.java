@@ -66,7 +66,6 @@ public class ApplicationServiceImpl implements ApplicationService {
         entity.updateDeleted();
 
         applicationRepository.save(entity);
-//        applicationRepository.delete(entity);
     }
 
     @Override
