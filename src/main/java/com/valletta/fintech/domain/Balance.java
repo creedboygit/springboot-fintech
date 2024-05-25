@@ -17,7 +17,6 @@ import org.hibernate.annotations.Where;
 
 @Entity
 @Getter
-@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor

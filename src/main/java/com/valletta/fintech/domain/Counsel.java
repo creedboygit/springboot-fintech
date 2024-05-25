@@ -19,7 +19,6 @@ import org.hibernate.annotations.Where;
 
 @Builder
 @Getter
-//@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @DynamicInsert

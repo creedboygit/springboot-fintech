@@ -16,7 +16,6 @@ import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Where;
 
 @Getter
-@Setter
 @Builder
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
