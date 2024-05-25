@@ -25,14 +25,19 @@ import org.hibernate.annotations.Where;
 @Where(clause = "is_deleted=false")
 public class Balance extends BaseEntity {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(nullable = false, updatable = false)
-  private Long balanceId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(nullable = false, updatable = false)
+    private Long balanceId;
 
-  @Column(columnDefinition = "bigint NOT NULL COMMENT '신청 ID'")
-  private Long applicationId;
+    @Column(columnDefinition = "bigint NOT NULL COMMENT '신청 ID'")
+    private Long applicationId;
 
-  @Column(columnDefinition = "decimal(15,2) NOT NULL COMMENT '잔여 대출 금액'")
-  private BigDecimal balance;
+    @Column(columnDefinition = "decimal(15,2) NOT NULL COMMENT '잔여 대출 금액'")
+    private BigDecimal balance;
+
+    public void updateBalance(Long applicationId, BigDecimal balance) {
+        this.applicationId = applicationId;
+        this.balance = balance;
+    }
 }
