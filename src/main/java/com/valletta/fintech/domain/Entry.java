@@ -25,14 +25,18 @@ import org.hibernate.annotations.Where;
 @Where(clause = "is_deleted=false")
 public class Entry extends BaseEntity {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(nullable = false, updatable = false)
-  private Long entryId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(nullable = false, updatable = false)
+    private Long entryId;
 
-  @Column(columnDefinition = "bigint NOT NULL COMMENT '신청 ID'")
-  private Long applicationId;
+    @Column(columnDefinition = "bigint NOT NULL COMMENT '신청 ID'")
+    private Long applicationId;
 
-  @Column(columnDefinition = "decimal(15,2) NOT NULL COMMENT '집행 금액'")
-  private BigDecimal entryAmount;
+    @Column(columnDefinition = "decimal(15,2) NOT NULL COMMENT '집행 금액'")
+    private BigDecimal entryAmount;
+
+    public void updateApplicationId(Long applicationId) {
+        this.applicationId = applicationId;
+    }
 }
