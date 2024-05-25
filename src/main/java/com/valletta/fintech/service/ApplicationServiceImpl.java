@@ -36,7 +36,7 @@ public class ApplicationServiceImpl implements ApplicationService {
     @Override
     public Response create(Request request) {
         Application application = modelMapper.map(request, Application.class);
-        application.setAppliedAt(LocalDateTime.now());
+        application.updateAppliedAt(LocalDateTime.now());
 
         Application applied = applicationRepository.save(application);
 
@@ -106,5 +106,10 @@ public class ApplicationServiceImpl implements ApplicationService {
         }
 
         return true;
+    }
+
+    @Override
+    public Response contract(Long applicationId) {
+        return null;
     }
 }
