@@ -3,6 +3,7 @@ package com.valletta.fintech.service;
 import com.valletta.fintech.constant.ResultType;
 import com.valletta.fintech.domain.AcceptTerms;
 import com.valletta.fintech.domain.Application;
+import com.valletta.fintech.domain.Judgment;
 import com.valletta.fintech.domain.Terms;
 import com.valletta.fintech.dto.ApplicationDto.AcceptTermsRequest;
 import com.valletta.fintech.dto.ApplicationDto.Request;
@@ -10,7 +11,9 @@ import com.valletta.fintech.dto.ApplicationDto.Response;
 import com.valletta.fintech.exception.BaseException;
 import com.valletta.fintech.repository.AcceptTermsRepository;
 import com.valletta.fintech.repository.ApplicationRepository;
+import com.valletta.fintech.repository.JudgmentRepository;
 import com.valletta.fintech.repository.TermsRepository;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.HashSet;
@@ -28,6 +31,8 @@ public class ApplicationServiceImpl implements ApplicationService {
     private final ApplicationRepository applicationRepository;
 
     private final TermsRepository termsRepository;
+
+    private final JudgmentRepository judgmentRepository;
 
     private final AcceptTermsRepository acceptTermsRepository;
 
@@ -110,6 +115,22 @@ public class ApplicationServiceImpl implements ApplicationService {
 
     @Override
     public Response contract(Long applicationId) {
-        return null;
+
+        // 신청 정보가 있는지 체크
+        Application application = applicationRepository.findById(applicationId).orElseThrow(() -> new BaseException(ResultType.SYSTEM_ERROR));
+
+        // 신청 심사 정보가 있는지 체크
+        Judgment judgment = judgmentRepository.findByApplicationId(applicationId).orElseThrow(() -> new BaseException(ResultType.SYSTEM_ERROR));
+
+        // 신청 정보의 승인 금액 > 0
+        if (application.getApprovalAmount() == null || application.getApprovalAmount().compareTo(BigDecimal.ZERO) == 0) {
+            throw new BaseException(ResultType.SYSTEM_ERROR);
+        }
+
+        // 계약 체결
+        application.updateContratedAt(LocalDateTime.now());
+        applicationRepository.save(application);
+
+        return modelMapper.map(application, Response.class);
     }
 }
