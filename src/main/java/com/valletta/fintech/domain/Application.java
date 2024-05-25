@@ -80,4 +80,8 @@ public class Application extends BaseEntity {
     public void deleteApplication(Long applicationId) {
         this.updateDeleted();
     }
+
+    public void updateContratedAt(LocalDateTime contractedAt) {
+        this.contractedAt = contractedAt;
+    }
 }
