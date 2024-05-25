@@ -73,6 +73,10 @@ public class Application extends BaseEntity {
         this.approvalAmount = approvalAmount;
     }
 
+    public void updateAppliedAt(LocalDateTime appliedAt) {
+        this.appliedAt = appliedAt;
+    }
+
     public void deleteApplication(Long applicationId) {
         this.updateDeleted();
     }
