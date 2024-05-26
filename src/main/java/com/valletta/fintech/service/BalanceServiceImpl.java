@@ -21,10 +21,11 @@ public class BalanceServiceImpl implements BananceService {
     @Override
     public Response create(Long applicationId, Request request) {
 
-        balanceRepository.findByApplicationId(applicationId).orElseThrow(() -> new BaseException(ResultType.SYSTEM_ERROR));
+//        balanceRepository.findByApplicationId(applicationId).orElseThrow(() -> new BaseException(ResultType.SYSTEM_ERROR));
 
         Balance balance = modelMapper.map(request, Balance.class);
 
+        // 첫 생성은 entry amount를 balance로
         BigDecimal entryAmount = request.getEntryAmount();
         balance.updateBalance(applicationId, entryAmount);
 
