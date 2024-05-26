@@ -40,4 +40,8 @@ public class Balance extends BaseEntity {
         this.applicationId = applicationId;
         this.balance = balance;
     }
+
+    public void updateBalance(BigDecimal balance) {
+        this.balance = balance;
+    }
 }
