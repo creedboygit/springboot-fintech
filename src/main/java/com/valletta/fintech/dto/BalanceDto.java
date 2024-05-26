@@ -21,6 +21,17 @@ public class BalanceDto implements Serializable {
     }
 
     @Getter
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class UpdateRequest {
+
+        private Long applicationId;
+        private BigDecimal beforeEntryAmount;
+        private BigDecimal afterEntryAmount;
+    }
+
+    @Getter
     @Setter
     @Builder
     @AllArgsConstructor
