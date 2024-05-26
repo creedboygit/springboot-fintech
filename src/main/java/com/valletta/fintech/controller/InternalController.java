@@ -5,6 +5,7 @@ import com.valletta.fintech.dto.EntryDto.Response;
 import com.valletta.fintech.dto.ResponseDto;
 import com.valletta.fintech.service.EntryService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,9 +21,15 @@ public class InternalController extends AbstractController {
 
 //    private final RepaymentService repaymentService;
 
-    @PostMapping("{applicationId}/entries")
-    public ResponseDto<Response> create(@PathVariable Long applicationId, @RequestBody Request request) {
+    @PostMapping("/{applicationId}/entries")
+    public ResponseDto<Response> create(@PathVariable("applicationId") Long applicationId, @RequestBody Request request) {
 
         return ok(entryService.create(applicationId, request));
+    }
+
+    @GetMapping("/{applicationId}/entries")
+    public ResponseDto<Response> get(@PathVariable("applicationId") Long applicationId) {
+
+        return ok(entryService.get(applicationId));
     }
 }
