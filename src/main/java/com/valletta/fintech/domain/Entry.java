@@ -39,4 +39,8 @@ public class Entry extends BaseEntity {
     public void updateApplicationId(Long applicationId) {
         this.applicationId = applicationId;
     }
+
+    public void updateEntryAmount(BigDecimal entryAmount) {
+        this.entryAmount = entryAmount;
+    }
 }
