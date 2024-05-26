@@ -4,11 +4,15 @@ import com.valletta.fintech.constant.ResultType;
 import com.valletta.fintech.domain.Application;
 import com.valletta.fintech.domain.Entry;
 import com.valletta.fintech.dto.BalanceDto;
+import com.valletta.fintech.dto.BalanceDto.UpdateRequest;
 import com.valletta.fintech.dto.EntryDto.Request;
 import com.valletta.fintech.dto.EntryDto.Response;
+import com.valletta.fintech.dto.EntryDto.UpdateResponse;
 import com.valletta.fintech.exception.BaseException;
 import com.valletta.fintech.repository.ApplicationRepository;
+import com.valletta.fintech.repository.BalanceRepository;
 import com.valletta.fintech.repository.EntryRepository;
+import java.math.BigDecimal;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -19,7 +23,8 @@ import org.springframework.stereotype.Service;
 public class EntryServiceImpl implements EntryService {
 
     private final EntryRepository entryRepository;
-    private final BananceService bananceService;
+    private final BalanceRepository balanceRepository;
+    private final BalanceService bananceService;
     private final ApplicationRepository applicationRepository;
     private final ModelMapper modelMapper;
 
@@ -54,6 +59,36 @@ public class EntryServiceImpl implements EntryService {
         } else {
             return null;
         }
+    }
+
+    @Override
+    public UpdateResponse update(Long entryId, Request request) {
+
+        // entry
+        Entry entry = entryRepository.findById(entryId).orElseThrow(() -> new BaseException(ResultType.SYSTEM_ERROR));
+
+        BigDecimal beforeEntryAmount = entry.getEntryAmount();
+        entry.updateEntryAmount(request.getEntryAmount());
+
+        entryRepository.save(entry);
+
+        // before -> after
+        Long applicationId = entry.getApplicationId();
+        BigDecimal afterEntryAmount = request.getEntryAmount();
+
+        // balance update
+        bananceService.update(applicationId, UpdateRequest.builder()
+            .applicationId(applicationId)
+            .beforeEntryAmount(beforeEntryAmount)
+            .afterEntryAmount(afterEntryAmount)
+            .build());
+
+        return UpdateResponse.builder()
+            .entryId(entryId)
+            .applicationId(applicationId)
+            .beforeEntryAmount(beforeEntryAmount)
+            .afterEntryAmount(afterEntryAmount)
+            .build();
     }
 
     private boolean isContractedApplication(Long applicationId) {
